@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Third-Party Cookie Check</title>
+</head>
+<body>
+  <div id="cookieCheckResult"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const useThirdPartyCookieCheck = () => {
+        return new Promise((resolve) => {
+          const frame = document.createElement("iframe");
+          frame.id = "3pc";
+          frame.src = "https://itsam8.github.io/git-test/"; // Add your hosted domain URL here
+          frame.style.display = "none";
+          frame.style.position = "fixed";
+
+          const handleMessage = (event) => {
+            if (event.data === "3pcSupported" || event.data === "3pcUnsupported") {
+              resolve(event.data === "3pcSupported");
+              document.body.removeChild(frame);
+              window.removeEventListener("message", handleMessage);
+            }
+          };
+
+          window.addEventListener("message", handleMessage, false);
+
+          document.body.appendChild(frame);
+          frame.style.display = "block";
+        });
+      };
+
+      useThirdPartyCookieCheck().then((isSupported) => {
+        const resultContainer = document.getElementById("cookieCheckResult");
+        resultContainer.textContent = `Third-party cookie support: ${isSupported}`;
+      });
+    });
+  </script>
+</body>
+</html>
